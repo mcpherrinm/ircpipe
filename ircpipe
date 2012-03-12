@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import irclib, sys, time, random
+
+"""Reads lines from standard input, and sends them as messages to an IRC channel
+   EG: echo Hello World! | ircat helloworld irc.freenode.net #csc
+"""
+
+irc = irclib.IRC()
+random.seed(time.time())
+
+def badnick(conn, event):
+  conn.nick('ircpipe' + str(random.randint(11, 99)))
+
+def spamthings(c, e):
+  print e.arguments()[0]
+  for line in sys.stdin:
+    c.privmsg(e.arguments()[0], line)
+    irc.process_once(0.11)
+    time.sleep(0.5)
+
+  #I don't immediately see a better way with irclib. Haven't looked for one though.
+  wait=time.time()
+  while wait > time.time()-5:
+    irc.process_once(0.1)
+  sys.exit(0)
+
+def main(network, channel):
+  irc.add_global_handler('erroneusnick', badnick)
+  irc.add_global_handler('nicknameinuse', badnick)
+
+  irc.add_global_handler('endofmotd', lambda c, e: c.join(channel))
+  irc.add_global_handler('endofnames', spamthings)
+
+  server = irc.server()
+  server.connect(network, 6667, 'ircat', ircname = 'IRC-enabled cat')
+
+  irc.process_forever()
+
+if __name__ == "__main__":
+  main(sys.argv[1], sys.argv[2])

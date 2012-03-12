@@ -1,0 +1,2 @@
+Reads lines from standard input, and sends them as messages to an IRC channel
+EG: echo Hello World! | ircpipe irc.freenode.net #csc
