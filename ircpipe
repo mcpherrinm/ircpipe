@@ -3,7 +3,7 @@
 import irclib, sys, time, random
 
 """Reads lines from standard input, and sends them as messages to an IRC channel
-   EG: echo Hello World! | ircat helloworld irc.freenode.net #csc
+   EG: echo Hello World! | ircpipe helloworld irc.freenode.net #csc
 """
 
 irc = irclib.IRC()
@@ -33,7 +33,7 @@ def main(network, channel):
   irc.add_global_handler('endofnames', spamthings)
 
   server = irc.server()
-  server.connect(network, 6667, 'ircat', ircname = 'IRC-enabled cat')
+  server.connect(network, 6667, 'ircpipe', ircname = 'IRC pipe')
 
   irc.process_forever()
 
